@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 在线小说连载网站
 
-## Getting Started
+基于 Next.js 14 + Supabase + Zustand 的在线小说连载平台。
 
-First, run the development server:
+## 项目结构
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+novel-website/
+├── src/
+│   ├── app/                    # Next.js App Router 页面
+│   │   ├── page.tsx           # 首页
+│   │   ├── login/             # 登录页面
+│   │   ├── register/          # 注册页面
+│   │   ├── novel/[id]/        # 小说详情页
+│   │   ├── reader/            # 读者页面
+│   │   ├── author/            # 作者后台
+│   │   └── admin/             # 管理员后台
+│   ├── components/             # 组件
+│   │   ├── layout/            # 布局组件
+│   │   └── ui/                # UI 基础组件
+│   └── lib/                   # 工具库
+│       ├── supabase/           # Supabase 客户端
+│       ├── store/              # Zustand 状态管理
+│       ├── types/              # TypeScript 类型定义
+│       └── utils/              # 工具函数
+├── .env.local                  # 环境变量（需自己创建）
+└── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 路由列表
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 公共页面
+- `/` - 首页（小说列表）
+- `/login` - 登录页面
+- `/register` - 注册页面
+- `/novel/[id]` - 小说详情页
+- `/novel/[id]/chapter/[chapterNumber]` - 章节阅读页
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 读者页面（需登录）
+- `/reader/profile` - 个人中心
 
-## Learn More
+### 作者页面（需登录+作者权限）
+- `/author/dashboard` - 作者后台首页
+- `/author/novel/new` - 创建新小说
+- `/author/novel/[id]/edit` - 编辑小说
+- `/author/novel/[id]/chapters` - 章节管理
 
-To learn more about Next.js, take a look at the following resources:
+### 管理员页面（需登录+管理员权限）
+- `/admin/dashboard` - 管理员后台
+- `/admin/users` - 用户管理
+- `/admin/authors` - 作者管理
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 环境配置
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. 复制 `.env.local.example` 为 `.env.local`
+2. 在 Supabase Dashboard 获取以下信息：
+   - `NEXT_PUBLIC_SUPABASE_URL` - Supabase 项目 URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase Anon Key
 
-## Deploy on Vercel
+## 数据库初始化
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. 在 Supabase Dashboard 的 SQL Editor 中执行 `DATABASE_SCHEMA.sql`
+2. 执行 `RLS_POLICIES.sql` 配置权限策略
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 开发
+
+```bash
+# 安装依赖（如果需要）
+npm install
+
+# 启动开发服务器
+npm run dev
+```
+
+## 技术栈
+
+- **Next.js 14** - React 框架
+- **TypeScript** - 类型安全
+- **Tailwind CSS** - 样式框架
+- **Supabase** - 数据库和后端服务
+- **Zustand** - 状态管理
