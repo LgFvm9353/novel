@@ -1,7 +1,7 @@
 {
-  "buildCommand": "cd novel-website && pnpm run build",
-  "outputDirectory": "novel-website/.next",
-  "installCommand": "cd novel-website && pnpm install",
+  "buildCommand": "pnpm run build",
+  "outputDirectory": ".next",
+  "installCommand": "pnpm install",
   "framework": "nextjs"
 }
 
