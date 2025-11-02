@@ -15,8 +15,37 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "在线小说连载网站",
-  description: "在线小说连载平台",
+  title: {
+    default: "在线小说连载网站",
+    template: "%s | 在线小说连载网站",
+  },
+  description: "在线小说连载平台，提供精彩的小说阅读体验",
+  keywords: ["小说", "连载", "阅读", "在线阅读", "小说平台"],
+  authors: [{ name: "Novel Website" }],
+  openGraph: {
+    type: "website",
+    locale: "zh_CN",
+    url: "https://your-domain.com",
+    title: "在线小说连载网站",
+    description: "在线小说连载平台，提供精彩的小说阅读体验",
+    siteName: "在线小说连载网站",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "在线小说连载网站",
+    description: "在线小说连载平台，提供精彩的小说阅读体验",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
