@@ -60,20 +60,21 @@ export default function CommentSection({
   }
 
   return (
-    <Card className="p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">
-        读者评论 ({comments.length})
+    <Card className="p-6 bg-white">
+      <h2 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
+        读者评论 <span className="text-gray-500 font-normal">({comments.length})</span>
       </h2>
 
       {/* 发表评论 */}
       {currentUserId ? (
-        <form onSubmit={handleSubmit} className="mb-6">
+        <form onSubmit={handleSubmit} className="mb-6 pb-6 border-b border-gray-200">
           <Textarea
             placeholder="写下你的评论..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             disabled={submitting}
-            className="mb-2"
+            className="mb-3"
+            rows={4}
           />
           <div className="flex justify-end">
             <Button
@@ -81,20 +82,21 @@ export default function CommentSection({
               variant="primary"
               size="sm"
               disabled={!newComment.trim() || submitting}
+              className="px-6"
             >
               {submitting ? '发表中...' : '发表评论'}
             </Button>
           </div>
         </form>
       ) : (
-        <div className="mb-6 p-4 bg-gray-50 rounded-md text-center text-gray-600">
+        <div className="mb-6 pb-6 p-4 bg-gray-50 rounded text-center text-sm text-gray-500 border-b border-gray-200">
           请先登录后再发表评论
         </div>
       )}
 
       {/* 评论列表 */}
       {comments.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-12 text-gray-500">
           还没有评论，来发表第一条评论吧！
         </div>
       ) : (
@@ -102,28 +104,27 @@ export default function CommentSection({
           {comments.map((comment) => (
             <div
               key={comment.id}
-              className="pb-4 border-b border-gray-200 last:border-b-0"
+              className="pb-4 border-b border-gray-100 last:border-b-0 last:pb-0"
             >
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-gray-900 text-sm">
                     {comment.users.username}
                   </span>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-xs text-gray-400">
                     {formatDate(comment.created_at)}
                   </span>
                 </div>
                 {currentUserId === comment.user_id && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  <button
                     onClick={() => onDeleteComment(comment.id)}
+                    className="text-xs text-gray-400 hover:text-red-500 transition-colors"
                   >
                     删除
-                  </Button>
+                  </button>
                 )}
               </div>
-              <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
+              <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{comment.content}</p>
             </div>
           ))}
         </div>

@@ -50,42 +50,44 @@ export default function StatusLogSection({
   }
 
   return (
-    <Card className="p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">
+    <Card className="p-6 bg-white">
+      <h2 className="text-lg font-bold text-gray-900 mb-2 pb-3 border-b border-gray-200">
         状态情况记录
       </h2>
-      <p className="text-sm text-gray-600 mb-4">
+      <p className="text-xs text-gray-500 mb-4">
         读者可以在此记录小说的阅读状态、追更情况等备注信息
       </p>
 
       {/* 添加状态记录 */}
       {currentUserId ? (
-        <form onSubmit={handleSubmit} className="mb-6">
+        <form onSubmit={handleSubmit} className="mb-6 pb-6 border-b border-gray-200">
           <div className="flex gap-2">
             <Input
               placeholder="记录你的状态（如：追更中、弃坑了、等完结等）"
               value={newStatusNote}
               onChange={(e) => setNewStatusNote(e.target.value)}
               disabled={submitting}
+              className="flex-1"
             />
             <Button
               type="submit"
               variant="primary"
               disabled={!newStatusNote.trim() || submitting}
+              className="px-6"
             >
               {submitting ? '添加中...' : '添加'}
             </Button>
           </div>
         </form>
       ) : (
-        <div className="mb-6 p-4 bg-gray-50 rounded-md text-center text-gray-600">
+        <div className="mb-6 pb-6 p-4 bg-gray-50 rounded text-center text-xs text-gray-500 border-b border-gray-200">
           请先登录后再添加状态记录
         </div>
       )}
 
       {/* 状态记录列表 */}
       {statusLogs.length === 0 ? (
-        <div className="text-center py-6 text-gray-500">
+        <div className="text-center py-12 text-gray-500 text-sm">
           暂无状态记录
         </div>
       ) : (
@@ -93,17 +95,17 @@ export default function StatusLogSection({
           {statusLogs.map((log) => (
             <div
               key={log.id}
-              className="p-3 bg-gray-50 rounded-md"
+              className="p-3 bg-gray-50 rounded border border-gray-100"
             >
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-gray-900 text-sm">
                   {log.users.username}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-400">
                   {formatDate(log.created_at)}
                 </span>
               </div>
-              <p className="text-gray-700 text-sm">{log.status_note}</p>
+              <p className="text-gray-700 text-sm leading-relaxed">{log.status_note}</p>
             </div>
           ))}
         </div>

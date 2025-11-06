@@ -138,11 +138,15 @@ export default function ChapterManagementPage() {
     setErrors({})
 
     if (editingChapter) {
-      // 更新章节
-      const { error } = await updateChapter(editingChapter.id, {
-        title: formData.title.trim(),
-        content: formData.content.trim(),
-      })
+      // 更新章节（使用novelId和chapterNumber）
+      const { error } = await updateChapter(
+        novelId,
+        editingChapter.chapter_number,
+        {
+          title: formData.title.trim(),
+          content: formData.content.trim(),
+        }
+      )
 
       if (error) {
         setErrors({ submit: error })
@@ -153,7 +157,7 @@ export default function ChapterManagementPage() {
       // 更新本地列表
       setChapters(
         chapters.map((ch) =>
-          ch.id === editingChapter.id
+          ch.chapter_number === editingChapter.chapter_number
             ? {
                 ...ch,
                 title: formData.title.trim(),
@@ -209,12 +213,12 @@ export default function ChapterManagementPage() {
     window.scrollTo(0, 0)
   }
 
-  const handleDelete = async (chapterId: string) => {
+  const handleDelete = async (chapter: Chapter) => {
     if (!confirm('确定要删除这个章节吗？')) {
       return
     }
 
-    const { error } = await deleteChapter(chapterId, novelId)
+    const { error } = await deleteChapter(novelId, chapter.chapter_number)
 
     if (error) {
       alert(error)
@@ -411,7 +415,7 @@ export default function ChapterManagementPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDelete(chapter.id)}
+                            onClick={() => handleDelete(chapter)}
                             className="text-red-600 hover:text-red-700 hover:border-red-300"
                           >
                             删除

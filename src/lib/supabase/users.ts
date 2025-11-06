@@ -80,19 +80,20 @@ export async function getUserComments(userId: string) {
 }
 
 /**
- * 获取用户的状态记录列表
+ * 获取用户的状态记录列表（从comments表的status_note字段）
  */
 export async function getUserStatusLogs(userId: string) {
   try {
     const { data, error } = await supabase
-      .from('novel_status_logs')
+      .from('comments')
       .select(
         `
         *,
-        novel:novels!novel_status_logs_novel_id_fkey(id, title, cover_image)
+        novel:novels!comments_novel_id_fkey(id, title, cover_image)
       `
       )
       .eq('user_id', userId)
+      .not('status_note', 'is', null)  // 只获取有status_note的记录
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -131,15 +132,16 @@ export async function deleteUserComment(commentId: string, userId: string) {
 }
 
 /**
- * 删除用户状态记录
+ * 删除用户状态记录（从comments表中删除）
  */
 export async function deleteUserStatusLog(logId: string, userId: string) {
   try {
     const { error } = await supabase
-      .from('novel_status_logs')
+      .from('comments')
       .delete()
       .eq('id', logId)
       .eq('user_id', userId)
+      .not('status_note', 'is', null)  // 确保只删除状态记录
 
     if (error) {
       console.error('Error deleting status log:', error)

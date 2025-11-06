@@ -32,35 +32,35 @@ export default function ChapterList({
   }
 
   return (
-    <Card className="p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">
+    <Card className="p-6 bg-white">
+      <h2 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
         章节列表
       </h2>
 
       {chapters.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-12 text-gray-500">
           暂无章节
         </div>
       ) : (
         <>
-          <div className="space-y-2">
+          <div className="space-y-1">
             {chapters.map((chapter) => (
               <Link
                 key={chapter.id}
                 href={`/novel/${novelId}/chapter/${chapter.chapter_number}`}
-                className="block px-4 py-3 hover:bg-gray-50 rounded-md transition-colors"
+                className="block px-4 py-3 hover:bg-orange-50 rounded transition-colors border-b border-gray-100 last:border-b-0"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-500 w-12">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <span className="text-xs font-medium text-gray-500 whitespace-nowrap">
                       第{chapter.chapter_number}章
                     </span>
-                    <span className="text-gray-900 hover:text-blue-600">
+                    <span className="text-gray-900 hover:text-orange-500 text-sm truncate">
                       {chapter.title}
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <span>{chapter.word_count} 字</span>
+                  <div className="flex items-center gap-3 text-xs text-gray-400 whitespace-nowrap">
+                    <span>{chapter.word_count}字</span>
                     <span>{formatDate(chapter.created_at)}</span>
                   </div>
                 </div>
@@ -71,25 +71,23 @@ export default function ChapterList({
           {/* 分页 */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-6 pt-4 border-t border-gray-200">
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
+                className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 上一页
-              </Button>
-              <span className="text-sm text-gray-600">
+              </button>
+              <span className="text-sm text-gray-600 px-3">
                 第 {currentPage} / {totalPages} 页
               </span>
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
+                className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 下一页
-              </Button>
+              </button>
             </div>
           )}
         </>

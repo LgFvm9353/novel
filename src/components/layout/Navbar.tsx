@@ -20,21 +20,21 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white/95 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between items-center h-14">
           {/* 左侧 Logo 和导航 */}
-          <div className="flex items-center">
+          <div className="flex items-center gap-8">
             <Link 
               href="/" 
-              className="text-xl font-bold text-gray-900 hover:text-orange-600 transition-colors duration-200"
+              className="text-2xl font-bold text-orange-500 hover:text-orange-600 transition-colors"
             >
               小说网站
             </Link>
-            <div className="ml-10 flex items-baseline space-x-2">
+            <div className="hidden md:flex items-center gap-1">
               <Link
                 href="/"
-                className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50"
+                className="px-4 py-2 text-gray-700 hover:text-orange-500 text-sm font-medium transition-colors"
               >
                 首页
               </Link>
@@ -42,26 +42,16 @@ export default function Navbar() {
           </div>
 
           {/* 右侧用户菜单 */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-3">
             {isAuthenticated && userProfile ? (
               <>
-                {/* 用户信息 */}
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200">
-                  <span className="text-gray-700 text-sm font-medium">
-                    {userProfile.username}
-                  </span>
-                  <span className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs font-medium rounded">
-                    {userProfile.role === 'reader' ? '读者' : userProfile.role === 'author' ? '作者' : '管理员'}
-                  </span>
-                </div>
-
                 {/* 作者后台链接 */}
                 {isAuthor && (
                   <Link
                     href="/author/dashboard"
-                    className="text-gray-600 hover:text-orange-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-orange-50"
+                    className="hidden md:block px-4 py-2 text-gray-700 hover:text-orange-500 text-sm font-medium transition-colors"
                   >
-                    作者后台
+                    作家中心
                   </Link>
                 )}
 
@@ -69,24 +59,26 @@ export default function Navbar() {
                 {isAdmin && (
                   <Link
                     href="/admin/dashboard"
-                    className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-gray-100"
+                    className="hidden md:block px-4 py-2 text-gray-700 hover:text-orange-500 text-sm font-medium transition-colors"
                   >
                     管理后台
                   </Link>
                 )}
 
-                {/* 个人中心链接 */}
-                <Link
-                  href="/reader/profile"
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-100"
-                >
-                  个人中心
-                </Link>
+                {/* 用户信息下拉区域 */}
+                <div className="flex items-center gap-2 px-3 py-1.5">
+                  <span className="text-gray-700 text-sm">
+                    {userProfile.username}
+                  </span>
+                  <span className="px-2 py-0.5 bg-orange-50 text-orange-600 text-xs font-medium rounded">
+                    {userProfile.role === 'reader' ? '读者' : userProfile.role === 'author' ? '作家' : '管理员'}
+                  </span>
+                </div>
 
                 {/* 退出按钮 */}
                 <button
                   onClick={handleLogout}
-                  className="text-gray-600 hover:text-red-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-red-50"
+                  className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm transition-colors"
                 >
                   退出
                 </button>
@@ -96,7 +88,7 @@ export default function Navbar() {
                 {/* 登录按钮 */}
                 <Link
                   href="/login"
-                  className="text-gray-600 hover:text-orange-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 hover:bg-orange-50"
+                  className="px-4 py-2 text-gray-700 hover:text-orange-500 text-sm font-medium transition-colors"
                 >
                   登录
                 </Link>
@@ -104,7 +96,7 @@ export default function Navbar() {
                 {/* 注册按钮 */}
                 <Link
                   href="/register"
-                  className="bg-orange-500 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors duration-200"
+                  className="bg-orange-500 text-white px-5 py-2 rounded text-sm font-medium hover:bg-orange-600 transition-colors"
                 >
                   注册
                 </Link>

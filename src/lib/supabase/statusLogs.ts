@@ -1,12 +1,12 @@
 import { supabase } from './client'
 
 /**
- * 获取小说状态记录
+ * 获取小说状态记录（从comments表的status_note字段，过滤出有status_note的记录）
  */
 export async function getStatusLogsByNovelId(novelId: string) {
   try {
     const { data, error } = await supabase
-      .from('novel_status_logs')
+      .from('comments')
       .select(`
         *,
         users (
@@ -14,6 +14,7 @@ export async function getStatusLogsByNovelId(novelId: string) {
         )
       `)
       .eq('novel_id', novelId)
+      .not('status_note', 'is', null)  // 只获取有status_note的记录
       .order('created_at', { ascending: false })
       .limit(10)
 
@@ -28,16 +29,17 @@ export async function getStatusLogsByNovelId(novelId: string) {
 }
 
 /**
- * 添加状态记录
+ * 添加状态记录（插入到comments表，使用status_note字段）
  */
 export async function addStatusLog(novelId: string, userId: string, statusNote: string) {
   try {
     const { data, error } = await supabase
-      .from('novel_status_logs')
+      .from('comments')
       .insert({
         novel_id: novelId,
         user_id: userId,
-        status_note: statusNote,
+        content: statusNote,  // 同时作为评论内容
+        status_note: statusNote,  // 状态记录
       })
       .select(`
         *,
@@ -56,4 +58,3 @@ export async function addStatusLog(novelId: string, userId: string, statusNote: 
     return { data: null, error: '添加状态记录失败' }
   }
 }
-

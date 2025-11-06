@@ -1,7 +1,7 @@
 import { supabase } from './client'
 
 /**
- * 获取小说评论列表
+ * 获取小说评论列表（排除状态记录，只获取普通评论）
  */
 export async function getCommentsByNovelId(novelId: string) {
   try {
@@ -14,6 +14,7 @@ export async function getCommentsByNovelId(novelId: string) {
         )
       `)
       .eq('novel_id', novelId)
+      .is('status_note', null)  // 只获取普通评论，排除状态记录
       .order('created_at', { ascending: false })
 
     if (error) {

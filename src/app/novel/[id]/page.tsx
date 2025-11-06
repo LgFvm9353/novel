@@ -29,30 +29,43 @@ export default function NovelDetailPage({ params }: { params: Promise<{ id: stri
   const loadNovelData = useCallback(async () => {
     setLoading(true)
 
-    // 优先加载核心数据（小说信息）
-    const novelResult = await getNovelById(id)
-    if (novelResult.data) {
-      setNovel(novelResult.data)
-      setLoading(false) // 核心数据加载完成即可显示
+    try {
+      // 优先加载核心数据（小说信息）
+      const novelResult = await getNovelById(id)
+      if (novelResult.data) {
+        setNovel(novelResult.data)
+        setLoading(false) // 核心数据加载完成即可显示
+      } else {
+        setLoading(false)
+        return
+      }
+
+      // 延迟加载次要数据（评论、状态日志），不阻塞页面显示
+      Promise.all([
+        getCommentsByNovelId(id),
+        getStatusLogsByNovelId(id),
+      ]).then(([commentsResult, statusLogsResult]) => {
+        setComments(commentsResult.data || [])
+        setStatusLogs(statusLogsResult.data || [])
+      }).catch((error) => {
+        console.error('Error loading comments/status logs:', error)
+      })
+    } catch (error) {
+      console.error('Error loading novel data:', error)
+      setLoading(false)
     }
-
-    // 延迟加载次要数据（评论、状态日志），不阻塞页面显示
-    Promise.all([
-      getCommentsByNovelId(id),
-      getStatusLogsByNovelId(id),
-    ]).then(([commentsResult, statusLogsResult]) => {
-      setComments(commentsResult.data)
-      setStatusLogs(statusLogsResult.data)
-    })
-
-    // 投票状态检查延迟到用户交互时（点击投票按钮时）
-    // 这样可以减少初始加载时的请求数量
   }, [id])
 
   const loadChapters = useCallback(async () => {
-    const { data, count } = await getChaptersByNovelId(id, chapterPage, pageSize)
-    setChapters(data)
-    setChapterTotalPages(Math.ceil(count / pageSize))
+    try {
+      const { data, count } = await getChaptersByNovelId(id, chapterPage, pageSize)
+      setChapters(data || [])
+      setChapterTotalPages(Math.max(1, Math.ceil((count || 0) / pageSize)))
+    } catch (error) {
+      console.error('Error loading chapters:', error)
+      setChapters([])
+      setChapterTotalPages(0)
+    }
   }, [id, chapterPage, pageSize])
 
   useEffect(() => {
@@ -108,30 +121,51 @@ export default function NovelDetailPage({ params }: { params: Promise<{ id: stri
   const handleAddComment = async (content: string) => {
     if (!userProfile) return
 
-    const { data, error } = await addComment(id, userProfile.id, content)
-    if (!error && data) {
-      // 乐观更新：直接添加到列表，无需重新加载
-      setComments([data, ...comments])
+    try {
+      const { data, error } = await addComment(id, userProfile.id, content)
+      if (!error && data) {
+        // 乐观更新：直接添加到列表，无需重新加载
+        setComments([data, ...comments])
+      } else if (error) {
+        alert(error || '添加评论失败')
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error)
+      alert('添加评论失败，请稍后重试')
     }
   }
 
   const handleDeleteComment = async (commentId: string) => {
     if (!confirm('确定要删除这条评论吗？')) return
 
-    const { error } = await deleteComment(commentId)
-    if (!error) {
-      // 乐观更新：直接从列表中移除
-      setComments(comments.filter(c => c.id !== commentId))
+    try {
+      const { error } = await deleteComment(commentId)
+      if (!error) {
+        // 乐观更新：直接从列表中移除
+        setComments(comments.filter(c => c.id !== commentId))
+      } else {
+        alert(error || '删除评论失败')
+      }
+    } catch (error) {
+      console.error('Error deleting comment:', error)
+      alert('删除评论失败，请稍后重试')
     }
   }
 
   const handleAddStatusLog = async (statusNote: string) => {
     if (!userProfile) return
 
-    const { data, error } = await addStatusLog(id, userProfile.id, statusNote)
-    if (!error && data) {
-      // 乐观更新：直接添加到列表
-      setStatusLogs([data, ...statusLogs])
+    try {
+      const { data, error } = await addStatusLog(id, userProfile.id, statusNote)
+      if (!error && data) {
+        // 乐观更新：直接添加到列表
+        setStatusLogs([data, ...statusLogs])
+      } else if (error) {
+        alert(error || '添加状态记录失败')
+      }
+    } catch (error) {
+      console.error('Error adding status log:', error)
+      alert('添加状态记录失败，请稍后重试')
     }
   }
 
@@ -153,8 +187,8 @@ export default function NovelDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="space-y-6">
           {/* 小说信息 */}
           <NovelInfo 
             novel={novel} 
@@ -163,7 +197,7 @@ export default function NovelDetailPage({ params }: { params: Promise<{ id: stri
             hasVoted={hasVoted}
             showVoteButton={
               // 如果是作者，不显示投票按钮（不能给自己投票）
-              novel?.authors?.user_id !== userProfile?.id
+              novel?.authors?.user_id && novel.authors.user_id !== userProfile?.id
             }
           />
 

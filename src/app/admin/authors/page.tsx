@@ -13,7 +13,7 @@ import ErrorMessage from '@/components/ui/ErrorMessage'
 import EmptyState from '@/components/ui/EmptyState'
 import {
   getAllAuthors,
-  getAllUsers,
+  getNonAuthorUsers,
   createAuthor,
   updateAuthor,
   removeAuthor,
@@ -28,7 +28,7 @@ interface Author {
     id: string
     username: string
   }
-  novels: { count: number }[]
+  novel_count?: number  // 小说数量（从getAllAuthors返回）
 }
 
 interface User {
@@ -67,8 +67,8 @@ export default function AdminAuthorsPage() {
       setAuthors(authorsData || [])
     }
 
-    // 获取用户列表（用于创建作者）
-    const { data: usersData, error: usersError } = await getAllUsers()
+    // 获取非作者用户列表（用于创建作者）
+    const { data: usersData, error: usersError } = await getNonAuthorUsers()
 
     if (usersError) {
       console.error('Failed to load users:', usersError)
@@ -213,12 +213,9 @@ export default function AdminAuthorsPage() {
     return date.toLocaleDateString('zh-CN')
   }
 
-  // 获取可用的用户列表（排除已经是作者的用户和当前管理员）
+  // 获取可用的用户列表（排除当前管理员，防止管理员添加自己为作者）
   const availableUsers = users.filter(
-    (u) => 
-      !authors.some((author) => author.user.id === u.id) &&
-      // 排除当前管理员，防止管理员添加自己为作者
-      (user ? u.id !== user.id : true)
+    (u) => user ? u.id !== user.id : true
   )
 
   if (loading) {
@@ -416,7 +413,7 @@ export default function AdminAuthorsPage() {
                           )}
                           <div className="flex items-center space-x-4 text-sm text-gray-500">
                             <span>
-                              {author.novels?.[0]?.count || 0} 部小说
+                              {author.novel_count || 0} 部小说
                             </span>
                             <span>加入时间：{formatDate(author.created_at)}</span>
                           </div>

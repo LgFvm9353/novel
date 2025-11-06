@@ -61,75 +61,68 @@ export default function NovelFilters({
   }
 
   return (
-    <div className="mb-6 space-y-4">
-      {/* 分类筛选 - 胶囊式标签 */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          分类
-        </label>
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => handleCategoryChange('')}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 ${
-              selectedCategory === ''
-                ? 'bg-orange-500 text-white'
-                : 'bg-white border border-gray-300 text-gray-700 hover:border-orange-400 hover:text-orange-600'
-            }`}
-          >
-            全部分类
-          </button>
-          {categories.map((category) => (
+    <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {/* 分类筛选 */}
+        <div className="flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm text-gray-500 mr-2">分类：</span>
             <button
-              key={category.id}
-              onClick={() => handleCategoryChange(category.id)}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200 ${
-                selectedCategory === category.id
+              onClick={() => handleCategoryChange('')}
+              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                selectedCategory === ''
                   ? 'bg-orange-500 text-white'
-                  : 'bg-white border border-gray-300 text-gray-700 hover:border-orange-400 hover:text-orange-600'
+                  : 'bg-gray-100 text-gray-700 hover:bg-orange-50 hover:text-orange-600'
               }`}
             >
-              {category.name}
+              全部
             </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 状态和排序 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* 状态筛选 */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            状态
-          </label>
-          <select
-            value={selectedStatus}
-            onChange={(e) => handleStatusChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 bg-white text-sm"
-          >
-            {statuses.map((status) => (
-              <option key={status.value} value={status.value}>
-                {status.label}
-              </option>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => handleCategoryChange(category.id)}
+                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                  selectedCategory === category.id
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-orange-50 hover:text-orange-600'
+                }`}
+              >
+                {category.name}
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
-        {/* 排序 */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            排序
-          </label>
-          <select
-            value={sortBy}
-            onChange={(e) => handleSortChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 bg-white text-sm"
-          >
-            {sortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+        {/* 状态和排序 */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">状态：</span>
+            <select
+              value={selectedStatus}
+              onChange={(e) => handleStatusChange(e.target.value)}
+              className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 bg-white"
+            >
+              {statuses.map((status) => (
+                <option key={status.value} value={status.value}>
+                  {status.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">排序：</span>
+            <select
+              value={sortBy}
+              onChange={(e) => handleSortChange(e.target.value)}
+              className="px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 bg-white"
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
     </div>

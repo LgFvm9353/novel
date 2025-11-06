@@ -29,20 +29,30 @@ export default function ChapterPage({
   const loadData = useCallback(async () => {
     setLoading(true)
 
-    const [novelResult, chapterResult] = await Promise.all([
-      getNovelById(id),
-      getChapter(id, parseInt(chapterNumber)),
-    ])
+    try {
+      const chapterNum = parseInt(chapterNumber)
+      if (isNaN(chapterNum) || chapterNum < 1) {
+        setLoading(false)
+        return
+      }
 
-    if (novelResult.data) {
-      setNovel(novelResult.data)
+      const [novelResult, chapterResult] = await Promise.all([
+        getNovelById(id),
+        getChapter(id, chapterNum),
+      ])
+
+      if (novelResult.data) {
+        setNovel(novelResult.data)
+      }
+
+      if (chapterResult.data) {
+        setChapter(chapterResult.data)
+      }
+    } catch (error) {
+      console.error('Error loading chapter data:', error)
+    } finally {
+      setLoading(false)
     }
-
-    if (chapterResult.data) {
-      setChapter(chapterResult.data)
-    }
-
-    setLoading(false)
   }, [id, chapterNumber])
 
   useEffect(() => {
@@ -51,21 +61,28 @@ export default function ChapterPage({
 
   // 从 localStorage 加载阅读设置（只执行一次）
   useEffect(() => {
-    const savedSettings = localStorage.getItem('readerSettings')
-    if (savedSettings) {
-      try {
+    if (typeof window === 'undefined') return // SSR安全检查
+    
+    try {
+      const savedSettings = localStorage.getItem('readerSettings')
+      if (savedSettings) {
         const settings = JSON.parse(savedSettings)
         setFontSize(settings.fontSize || 16)
         setLineHeight(settings.lineHeight || 1.8)
         setBgColor(settings.bgColor || '#ffffff')
-      } catch (error) {
-        console.error('Failed to parse reader settings:', error)
       }
+    } catch (error) {
+      console.error('Failed to parse reader settings:', error)
     }
   }, []) // 只执行一次
 
   const saveSettings = (newSettings: any) => {
-    localStorage.setItem('readerSettings', JSON.stringify(newSettings))
+    if (typeof window === 'undefined') return // SSR安全检查
+    try {
+      localStorage.setItem('readerSettings', JSON.stringify(newSettings))
+    } catch (error) {
+      console.error('Failed to save reader settings:', error)
+    }
   }
 
   const handleFontSizeChange = (size: number) => {
@@ -92,7 +109,7 @@ export default function ChapterPage({
 
   const handleNextChapter = () => {
     const nextNumber = parseInt(chapterNumber) + 1
-    if (novel && nextNumber <= novel.total_chapters) {
+    if (novel && novel.total_chapters && nextNumber <= novel.total_chapters) {
       router.push(`/novel/${id}/chapter/${nextNumber}`)
     }
   }
@@ -120,18 +137,21 @@ export default function ChapterPage({
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: bgColor }}>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* 顶部导航 */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
           <Link href={`/novel/${id}`}>
-            <Button variant="outline" size="sm">
+            <button className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors">
               ← 返回目录
-            </Button>
+            </button>
           </Link>
-          <div className="text-center flex-1 mx-4">
-            <h2 className="text-lg font-semibold text-gray-900 truncate">
+          <div className="text-center flex-1 mx-4 min-w-0">
+            <h2 className="text-base font-semibold text-gray-900 truncate">
               {novel.title}
             </h2>
+            <p className="text-xs text-gray-500 mt-1 truncate">
+              第{chapterNumber}章
+            </p>
           </div>
           <ReaderSettings
             fontSize={fontSize}
@@ -152,24 +172,26 @@ export default function ChapterPage({
         />
 
         {/* 底部导航 */}
-        <div className="flex items-center justify-center gap-4 mt-8">
-          <Button
-            variant="outline"
+        <div className="flex items-center justify-center gap-3 mt-10 pt-6 border-t border-gray-200">
+          <button
             onClick={handlePrevChapter}
             disabled={parseInt(chapterNumber) === 1}
+            className="px-5 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             ← 上一章
-          </Button>
+          </button>
           <Link href={`/novel/${id}`}>
-            <Button variant="secondary">目录</Button>
+            <button className="px-5 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors">
+              目录
+            </button>
           </Link>
-          <Button
-            variant="outline"
+          <button
             onClick={handleNextChapter}
-            disabled={parseInt(chapterNumber) >= novel.total_chapters}
+            disabled={!novel?.total_chapters || parseInt(chapterNumber) >= novel.total_chapters}
+            className="px-5 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             下一章 →
-          </Button>
+          </button>
         </div>
       </div>
     </div>
